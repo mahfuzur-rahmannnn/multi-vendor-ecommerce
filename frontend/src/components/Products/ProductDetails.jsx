@@ -96,8 +96,7 @@ const ProductDetails = ({ data }) => {
                     </span>
                     <button
                       className="bg-gradient-to-r from-teal-400 to-teal-500 text-white 
-                                             font-bold rounded-l px-4 py-2 shadow-lg hover:opacity-75 
-                                              transition duration-300 ease-in-out  "
+                         font-bold rounded-l px-4 py-2 shadow-lg hover:opacity-75  transition duration-300 ease-in-out  "
                       onClick={incrementCount}
                     >
                       +
@@ -160,6 +159,8 @@ const ProductDetails = ({ data }) => {
           </div>
 
           <ProductDetailsInfo data={data} />
+          <br />
+          <br />
         </div>
       ) : null}
     </div>
