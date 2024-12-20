@@ -4,20 +4,21 @@ const initialState = {
   isLoading: true,
 };
 
-export const sellerReducer = createReducer(initialState, (builder) => {
+export const productReducer = createReducer(initialState, (builder) => {
   builder
-    .addCase("LoadSellerRequest", (state) => {
+    .addCase("productCreateRequest", (state) => {
       state.isLoading = true;
     })
-    .addCase("LoadSellerSuccess", (state, action) => {
-      state.isSeller = true;
+
+    .addCase("productCreateSuccess", (state, action) => {
       state.isLoading = false;
-      state.seller = action.payload;
+      state.prodcut = action.payload;
+      state.success = true;
     })
-    .addCase("LoadSellerFail", (state, action) => {
+    .addCase("productCreateFail", (state, action) => {
       state.isLoading = false;
       state.error = action.payload;
-      state.isSeller = false;
+      state.success = false;
     })
     .addCase("clearErrors", (state) => {
       state.error = null;
