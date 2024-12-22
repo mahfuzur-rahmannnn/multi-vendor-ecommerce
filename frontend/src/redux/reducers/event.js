@@ -4,45 +4,45 @@ const initialState = {
   isLoading: true,
 };
 
-export const productReducer = createReducer(initialState, (builder) => {
+export const eventReducer = createReducer(initialState, (builder) => {
   builder
-    .addCase("productCreateRequest", (state) => {
+    .addCase("eventCreateRequest", (state) => {
       state.isLoading = true;
     })
 
-    .addCase("productCreateSuccess", (state, action) => {
+    .addCase("eventCreateSuccess", (state, action) => {
       state.isLoading = false;
       state.prodcut = action.payload;
       state.success = true;
     })
-    .addCase("productCreateFail", (state, action) => {
+    .addCase("eventCreateFail", (state, action) => {
       state.isLoading = false;
       state.error = action.payload;
       state.success = false;
     })
-    // get all products of shop
-    .addCase("getAllProductsShopRequest", (state) => {
+    // get all events of shop
+    .addCase("getAlleventsShopRequest", (state) => {
       state.isLoading = true;
     })
-    .addCase("getAllProductsShopSuccess", (state, action) => {
+    .addCase("getAlleventsShopSuccess", (state, action) => {
       state.isLoading = false;
-      state.products = action.payload;
+      state.events = action.payload;
     })
-    .addCase("getAllProductsShopFailed", (state, action) => {
+    .addCase("getAlleventsShopFailed", (state, action) => {
       state.isLoading = false;
       state.error = action.payload;
     })
-    // delete product of a shop
-    .addCase("deleteProductRequest", (state) => {
+    // delete event of a shop
+    .addCase("deleteeventRequest", (state) => {
       state.isLoading = true;
     })
 
-    .addCase("deleteProductSuccess", (state, action) => {
+    .addCase("deleteeventSuccess", (state, action) => {
       state.isLoading = false;
       state.message = action.payload;
     })
 
-    .addCase("deleteProductFailed", (state, action) => {
+    .addCase("deleteeventFailed", (state, action) => {
       state.isLoading = false;
       state.error = action.payload;
     })

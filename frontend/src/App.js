@@ -25,6 +25,10 @@ import {
   ShopHomePage,
   ShopDashboardPage,
   ShopCreateProduct,
+  ShopAllProducts,
+  ShopCreateEvents,
+  ShopAllEvents,
+  ShopAllCoupouns,
 } from "./routes/ShopRoutes.js";
 import SellerProtectedRoute from "./routes/SellerProtectedRoute.js";
 
@@ -98,6 +102,38 @@ const App = () => {
           element={
             <SellerProtectedRoute>
               <ShopCreateProduct />
+            </SellerProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-products"
+          element={
+            <SellerProtectedRoute>
+              <ShopAllProducts />
+            </SellerProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-create-event"
+          element={
+            <SellerProtectedRoute>
+              <ShopCreateEvents />
+            </SellerProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-events"
+          element={
+            <SellerProtectedRoute>
+              <ShopAllEvents />
+            </SellerProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-coupouns"
+          element={
+            <SellerProtectedRoute>
+              <ShopAllCoupouns />
             </SellerProtectedRoute>
           }
         />
