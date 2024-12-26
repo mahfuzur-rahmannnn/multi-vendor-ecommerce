@@ -50,8 +50,8 @@ const CreateEvent = () => {
     }
     if (success) {
       toast.success("Event created successfully!");
-      navigate("/dashboard"); //
-
+      navigate("/dashboard-events");
+      window.location.reload();
     }
   }, [dispatch, error, success]);
 
@@ -80,7 +80,6 @@ const CreateEvent = () => {
     newForm.append("shopId", seller._id);
     newForm.append("start_Date", startDate.toISOString());
     newForm.append("finish_Date", endDate.toISOString());
-
     dispatch(createEvent(newForm));
   };
 

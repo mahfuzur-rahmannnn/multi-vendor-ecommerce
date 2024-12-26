@@ -10,11 +10,11 @@ import Loader from "../Layout/Loader";
 import { server } from "../../server";
 import { toast } from "react-toastify";
 
-const AllCoupouns = () => {
+const AllCoupons = () => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [coupouns, setCoupouns] = useState([]);
+  const [coupons, setCoupons] = useState([]);
   const [minAmount, setMinAmout] = useState(null);
   const [maxAmount, setMaxAmount] = useState(null);
   const [selectedProducts, setSelectedProducts] = useState(null);
@@ -27,12 +27,12 @@ const AllCoupouns = () => {
   useEffect(() => {
     setIsLoading(true);
     axios
-      .get(`${server}/coupoun/get-coupoun/${seller._id}`, {
+      .get(`${server}/coupon/get-coupon/${seller._id}`, {
         withCredentials: true,
       })
       .then((res) => {
         setIsLoading(false);
-        setCoupouns(res.data.coupounCodes);
+        setCoupons(res.data.couponCodes);
       })
       .catch((error) => {
         setIsLoading(false);
@@ -41,11 +41,11 @@ const AllCoupouns = () => {
 
   const handleDelete = async (id) => {
     axios
-      .delete(`${server}/coupoun/delete-coupoun/${id}`, {
+      .delete(`${server}/coupon/delete-coupon/${id}`, {
         withCredentials: true,
       })
       .then((res) => {
-        toast.success("Coupoun code deleted succesfully!");
+        toast.success("Coupon code deleted succesfully!");
       });
     window.location.reload();
   };
@@ -55,7 +55,7 @@ const AllCoupouns = () => {
 
     await axios
       .post(
-        `${server}/coupoun/create-coupoun-code`,
+        `${server}/coupon/create-coupon-code`,
         {
           name,
           minAmount,
@@ -67,7 +67,7 @@ const AllCoupouns = () => {
         { withCredentials: true }
       )
       .then((res) => {
-        toast.success("Coupoun code created successfully!");
+        toast.success("Coupon code created successfully!");
         setOpen(false);
         window.location.reload();
       })
@@ -111,8 +111,8 @@ const AllCoupouns = () => {
 
   const row = [];
 
-  coupouns &&
-    coupouns.forEach((item) => {
+  coupons &&
+    coupons.forEach((item) => {
       row.push({
         id: item._id,
         name: item.name,
@@ -132,7 +132,7 @@ const AllCoupouns = () => {
               className={`${styles.button} !w-max !h-[45px] px-3 !rounded-[5px] mr-3 mb-3`}
               onClick={() => setOpen(true)}
             >
-              <span className="text-white">Create Coupoun Code</span>
+              <span className="text-white">Create Coupon Code</span>
             </div>
           </div>
           <DataGrid
@@ -153,9 +153,9 @@ const AllCoupouns = () => {
                   />
                 </div>
                 <h5 className="text-[30px] font-Poppins text-center">
-                  Create Coupoun code
+                  Create Coupon code
                 </h5>
-                {/* create coupoun code */}
+                {/* create coupon code */}
                 <form onSubmit={handleSubmit} aria-required={true}>
                   <br />
                   <div>
@@ -169,7 +169,7 @@ const AllCoupouns = () => {
                       value={name}
                       className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="Enter your coupoun code name..."
+                      placeholder="Enter your coupon code name..."
                     />
                   </div>
                   <br />
@@ -185,7 +185,7 @@ const AllCoupouns = () => {
                       required
                       className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       onChange={(e) => setValue(e.target.value)}
-                      placeholder="Enter your coupoun code value..."
+                      placeholder="Enter your coupon code value..."
                     />
                   </div>
                   <br />
@@ -197,7 +197,7 @@ const AllCoupouns = () => {
                       value={minAmount}
                       className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       onChange={(e) => setMinAmout(e.target.value)}
-                      placeholder="Enter your coupoun code min amount..."
+                      placeholder="Enter your coupon code min amount..."
                     />
                   </div>
                   <br />
@@ -209,7 +209,7 @@ const AllCoupouns = () => {
                       value={maxAmount}
                       className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       onChange={(e) => setMaxAmount(e.target.value)}
-                      placeholder="Enter your coupoun code max amount..."
+                      placeholder="Enter your coupon code max amount..."
                     />
                   </div>
                   <br />
@@ -249,4 +249,4 @@ const AllCoupouns = () => {
   );
 };
 
-export default AllCoupouns;
+export default AllCoupons;

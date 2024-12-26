@@ -13,7 +13,7 @@ app.use(
     credentials: true,
   })
 );
-app.use("/", express.static("uploads")); // maybe there will be an error
+app.use("/", express.static("uploads"));
 app.use(bodyparser.urlencoded({ extended: true, limit: "50mb" }));
 
 // config
@@ -28,13 +28,13 @@ const user = require("./controller/user");
 const shop = require("./controller/shop");
 const product = require("./controller/product");
 const event = require("./controller/event");
-const coupoun = require("./controller/coupounCode");
+const coupon = require("./controller/couponCode");
 
 app.use("/api/v2/user", user);
 app.use("/api/v2/shop", shop);
 app.use("/api/v2/product", product);
 app.use("/api/v2/event", event);
-app.use("/api/v2/coupoun", coupoun);
+app.use("/api/v2/coupon", coupon);
 
 // It's for ErrorHandling
 app.use(ErrorHandler);

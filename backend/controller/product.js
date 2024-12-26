@@ -38,6 +38,23 @@ router.post(
   })
 );
 
+// get all products
+router.get(
+  "/get-all-products",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const products = await Product.find();
+
+      res.status(201).json({
+        success: true,
+        products,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error, 400));
+    }
+  })
+);
+
 //  get all products of a shop
 router.get(
   "/get-all-products-shop/:id",

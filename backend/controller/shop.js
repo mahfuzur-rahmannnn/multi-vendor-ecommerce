@@ -4,14 +4,14 @@ const router = express.Router();
 const fs = require("fs");
 const jwt = require("jsonwebtoken");
 const sendMail = require("../utils/sendMail");
-const sendToken = require("../utils/jwtToken");
-const { isAuthenticated, isSeller } = require("../middleware/auth");
+const { isSeller } = require("../middleware/auth");
 const { upload } = require("../multer");
 const Shop = require("../model/shop");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHandler = require("../utils/ErrorHandler");
 const sendShopToken = require("../utils/shopToken");
 
+// create shop
 router.post("/create-shop", upload.single("file"), async (req, res, next) => {
   try {
     const { name, email, password, address, phoneNumber, zipCode } = req.body;
@@ -171,6 +171,22 @@ router.get(
       res.status(201).json({
         success: true,
         message: "Log out successful!",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// get shop info
+router.get(
+  "/get-shop-info/:id",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const shop = await Shop.findById(req.params.id);
+      res.status(201).json({
+        success: true,
+        shop,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
