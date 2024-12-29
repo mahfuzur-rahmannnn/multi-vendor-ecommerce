@@ -582,7 +582,7 @@ const Address = () => {
       toast.error("Please fill all the fields!");
     } else {
       dispatch(
-        updateUserAddress(country, city, address1, address2, addressType)
+        updateUserAddress(country, city, address1, address2, zipCode, addressType)
       );
       setOpen(false);
       setCountry("");
