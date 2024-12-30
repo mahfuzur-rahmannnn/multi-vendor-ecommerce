@@ -8,10 +8,13 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+
 import { useSelector } from "react-redux";
 import { server } from "../../server";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { RxCross1 } from "react-icons/rx";
 
 const Payment = () => {
   const [orderData, setOrderData] = useState([]);
@@ -27,14 +30,60 @@ const Payment = () => {
   }, []);
 
   const createOrder = (data, actions) => {
-    //
+    return actions.order
+      .create({
+        purchase_units: [
+          {
+            descriptions: "Sunflower",
+
+            amount: {
+              currency_code: "USD",
+              value: orderData?.totalPrice,
+            },
+          },
+        ],
+
+        application_context: {
+          shipping_preference: "NO_SHIPPING",
+        },
+      })
+      .then((orderId) => {
+        return orderId;
+      });
   };
 
   const onApprove = async (data, actions) => {
-    console.log("ddd");
+    return actions.order.capture().then(function (details) {
+      const { payer } = details;
+      let paymentInfo = payer;
+      if (paymentInfo !== undefined) {
+        paypalPaymentHandler(paymentInfo);
+      }
+    });
   };
   const paypalPaymentHandler = async (paymentInfo) => {
-    //
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    order.paymentInfo = {
+      id: paymentInfo.payer_id,
+      success: "succeeded",
+      type: "Paypal",
+    };
+
+    await axios
+      .post(`${server}/order/create-order`, order, config)
+      .then((res) => {
+        setOpen(false);
+        navigate("/order/success");
+        toast.success("Order successfull!");
+        localStorage.setItem("cartItems", JSON.stringify([]));
+        localStorage.setItem("latestOrder", JSON.stringify([]));
+        window.location.reload();
+      });
   };
 
   const paymentData = {
@@ -101,6 +150,27 @@ const Payment = () => {
 
   const cashOnDeliveryHandler = async (e) => {
     e.preventDefault();
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    order.paymentInfo = {
+      type: "Cash On Delivery",
+    };
+
+    await axios
+      .post(`${server}/order/create-order`, order, config)
+      .then((res) => {
+        setOpen(false);
+        navigate("/order/success");
+        toast.success("Order successfull!");
+        localStorage.setItem("cartItems", JSON.stringify([]));
+        localStorage.setItem("latestOrder", JSON.stringify([]));
+        window.location.reload();
+      });
   };
 
   return (
@@ -266,22 +336,46 @@ const PaymentInfo = ({
           </h4>
         </div>
 
-        {/* pay with card */}
+        {/* pay with paypal */}
         {select === 2 ? (
           <div className="w-full flex border-b">
-            <form className="w-full" onSubmit={paymentHandler}>
-              <div className="w-full flex pb-3">
-                <div className="w-full">
-                  <label className="block pb-2">Paypal Email</label>
-                  <input required className={`${styles.input}`} />
+            <div
+              className={`${styles.button} !bg-[#f63b60] text-[#fff] h-[45px] rounded-[5px] cursor-pointer text-[18px] font-[600]`}
+              onClick={() => setOpen(true)}
+            >
+              Pay Now
+            </div>
+            {open && (
+              <div
+                className="w-full fixed top-0 left-0 bg-[#00000039] h-screen flex items-center justify-center
+              z-[99999]"
+              >
+                <div
+                  className=" w-full 800px:w-[40%] h-screen 800px:h-[80vh] bg-white rounded-[5px] shadow flex flex-col 
+                justify-center p-8 relative overflow-y-scroll"
+                >
+                  <div className="w-full flex justify-end p-3 ">
+                    <RxCross1
+                      size={30}
+                      className="cursor-pointer absolute top-3 right-3"
+                      onClick={() => setOpen(false)}
+                    />
+                  </div>
+                  <PayPalScriptProvider
+                    options={{
+                      "client-id":
+                        "AQ59tBjtl6l4Ic1fI_MOm6Mru49omeOOXmDzXf5aN3Vre4mrXldf41lr9S_XN-8R84Pnr4cg8_ZdwaMj",
+                    }}
+                  >
+                    <PayPalButtons
+                      style={{ layout: "vertical" }}
+                      onApprove={onApprove}
+                      createOrder={createOrder}
+                    />
+                  </PayPalScriptProvider>
                 </div>
               </div>
-              <input
-                type="submit"
-                value="Submit"
-                className={`${styles.button} !bg-[#f63b60] text-[#fff] h-[45px] rounded-[5px] cursor-pointer text-[18px] font-[600]`}
-              />
-            </form>
+            )}
           </div>
         ) : null}
       </div>
@@ -303,10 +397,10 @@ const PaymentInfo = ({
           </h4>
         </div>
 
-        {/* pay with card */}
+        {/* cash on delivery*/}
         {select === 3 ? (
           <div className="w-full flex">
-            <form className="w-full" onSubmit={paymentHandler}>
+            <form className="w-full" onSubmit={cashOnDeliveryHandler}>
               <input
                 type="submit"
                 value="Confirm"
@@ -343,20 +437,6 @@ const CartData = ({ orderData }) => {
         ${orderData?.totalPrice}
       </h5>
       <br />
-      <form>
-        <input
-          type="text"
-          className={`${styles.input} h-[40px] pl-2`}
-          placeholder="Coupoun code"
-          required
-        />
-        <input
-          className={`w-full h-[40px] border border-[#f63b60] text-center text-[#f63b60] rounded-[3px] mt-8 cursor-pointer`}
-          required
-          value="Apply code"
-          type="submit"
-        />
-      </form>
     </div>
   );
 };
