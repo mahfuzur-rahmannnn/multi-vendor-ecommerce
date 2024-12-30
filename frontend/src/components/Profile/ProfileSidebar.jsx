@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { HiOutlineReceiptRefund, HiOutlineShoppingBag } from "react-icons/hi";
 import { AiOutlineLogout, AiOutlineMessage } from "react-icons/ai";
 import { MdOutlineTrackChanges } from "react-icons/md";
-import {RiLockPasswordLine} from "react-icons/ri"
+import { RiLockPasswordLine } from "react-icons/ri";
 import { TbAddressBook } from "react-icons/tb";
 import axios from "axios";
 import { server } from "../../server";

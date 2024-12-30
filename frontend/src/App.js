@@ -18,7 +18,7 @@ import {
   ShopCreatePage,
   SellerActivationPage,
   ShopLoginPage,
-  OrderDetailsPage
+  OrderDetailsPage,
 } from "./routes/Routes.js";
 
 import {
