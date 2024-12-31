@@ -8,7 +8,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { getAllProductsShop } from "../../redux/actions/product";
-import { backend_url } from "../../server";
+import { backend_url, server } from "../../server";
 import styles from "../../styles/styles";
 import {
   addToWishlist,
@@ -16,10 +16,13 @@ import {
 } from "../../redux/actions/wishlist";
 import { addToCart } from "../../redux/actions/cart";
 import { toast } from "react-toastify";
+import Ratings from "./Ratings";
+import axios from "axios";
 
 const ProductDetails = ({ data }) => {
   const { cart } = useSelector((state) => state.cart);
   const { wishlist } = useSelector((state) => state.wishlist);
+  const { user, isAuthenticated } = useSelector((state) => state.user);
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const [select, setSelect] = useState(1);
@@ -47,9 +50,19 @@ const ProductDetails = ({ data }) => {
     }
   };
 
-  const handleMessageSubmit = () => {
-    navigate("/inbox?converstion = 5050hgqAJQ4J3 ");
-  };
+  const totalReviewsLength =
+    products &&
+    products.reduce((acc, product) => acc + product.reviews.length, 0);
+
+  const totalRatings =
+    products &&
+    products.reduce(
+      (acc, product) =>
+        acc + product.reviews.reduce((sum, review) => sum + review.rating, 0),
+      0
+    );
+
+  const averageRating = totalRatings / totalReviewsLength || 0;
 
   const removeFromWishlistHandler = (data) => {
     setClick(!click);
@@ -73,6 +86,28 @@ const ProductDetails = ({ data }) => {
         dispatch(addToCart(cartData));
         toast.success("Item added to cart successfully!");
       }
+    }
+  };
+
+  const handleMessageSubmit = async () => {
+    if (isAuthenticated) {
+      const groupTitle = data._id + user._id;
+      const userId = user._id;
+      const sellerId = data.shop._id;
+      await axios
+        .post(`${server}/conversation/create-new-conversation`, {
+          groupTitle,
+          userId,
+          sellerId,
+        })
+        .then((res) => {
+          navigate(`/inbox?${res.data.conversation._id}`);
+        })
+        .catch((error) => {
+          toast.error(error.response.data.message);
+        });
+    } else {
+      toast.error("Please login to create a conversation");
     }
   };
 
@@ -190,7 +225,9 @@ const ProductDetails = ({ data }) => {
                         {data.shop.name}
                       </h3>
                     </Link>
-                    <h5 className="pb-3 text-[15px]  ">(4/5) Ratings</h5>
+                    <h5 className="pb-3 text-[15px]  ">
+                      ({averageRating}/5) Ratings
+                    </h5>
                   </div>
                   <div
                     className={`${styles.button} bg-[#6443d1] mt-4 !rounded !h-11`}
@@ -205,7 +242,12 @@ const ProductDetails = ({ data }) => {
             </div>
           </div>
 
-          <ProductDetailsInfo data={data} products={products} />
+          <ProductDetailsInfo
+            data={data}
+            products={products}
+            totalReviewsLength={totalReviewsLength}
+            averageRating={averageRating}
+          />
           <br />
           <br />
         </div>
@@ -214,7 +256,12 @@ const ProductDetails = ({ data }) => {
   );
 };
 
-const ProductDetailsInfo = ({ data, products }) => {
+const ProductDetailsInfo = ({
+  data,
+  products,
+  totalReviewsLength,
+  averageRating,
+}) => {
   const [active, setActive] = useState(1);
   return (
     <div className="bg-[#f5f6fb] px-3 800px:px-10 py-2  rounded  ">
@@ -265,8 +312,30 @@ const ProductDetailsInfo = ({ data, products }) => {
       ) : null}
 
       {active === 2 ? (
-        <div className="w-full justify-center min-h-[40vh]  flex items-center ">
-          <p>No Reviews yet!</p>
+        <div className="w-full  min-h-[40vh]  flex  flex-col items-center  py-3 overflow-y-scroll">
+          {data &&
+            data.reviews.map((item, index) => (
+              <div className="w-full flex my-2">
+                <img
+                  src={`${backend_url}/${item.user.avatar}`}
+                  alt=""
+                  className="w-[50px] h-[50px] rounded-full "
+                />
+                <div className="pl-2">
+                  <div div className="w-full flex items-center ">
+                    <h1 className=" font-[500] mr-3 ">{item.user.name}</h1>
+                    <Ratings rating={item?.rating} />
+                  </div>
+                  <p>{item.comment}</p>
+                </div>
+              </div>
+            ))}
+
+          <div div className="w-full flex justify-center ">
+            {data && data.reviews.length === 0 && (
+              <h5>No Reviews have for this product</h5>
+            )}
+          </div>
         </div>
       ) : null}
 
@@ -281,10 +350,10 @@ const ProductDetailsInfo = ({ data, products }) => {
                   className="w-[50px] h-[50px] rounded-full"
                 />
                 <div className="pl-3">
-                  <h3 className={`${styles.shop_name}`}>
-                    {data.shop.shop_name}
-                  </h3>
-                  <h5 className="pb-2 text-[15px] ">(4/5) Ratings</h5>
+                  <h3 className={`${styles.shop_name}`}>{data.shop.name}</h3>
+                  <h5 className="pb-2 text-[15px] ">
+                    ({averageRating}/5) Ratings
+                  </h5>
                 </div>
               </div>
             </Link>
@@ -305,7 +374,8 @@ const ProductDetailsInfo = ({ data, products }) => {
                 </span>
               </h5>
               <h5 className="font-[600] pt-3 ">
-                Total Reviews: <span className="font-[500]">324</span>
+                Total Reviews:{" "}
+                <span className="font-[500]">{totalReviewsLength}</span>
               </h5>
               <Link to="/">
                 <div
