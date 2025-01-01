@@ -20,6 +20,7 @@ import {
   ShopLoginPage,
   OrderDetailsPage,
   TrackOrderPage,
+  UserInbox
 } from "./routes/Routes.js";
 
 import {
@@ -36,7 +37,7 @@ import {
   ShopAllRefunds,
   ShopSettingsPage,
   ShopWithDrawMoneyPage,
-  ShopInboxPage
+  ShopInboxPage,
 } from "./routes/ShopRoutes.js";
 import SellerProtectedRoute from "./routes/SellerProtectedRoute.js";
 import { getAllEvents } from "./redux/actions/event.js";
@@ -118,6 +119,15 @@ const App = () => {
           element={
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+
+<Route
+          path="/inbox"
+          element={
+            <ProtectedRoute>
+              <UserInbox />
             </ProtectedRoute>
           }
         />
@@ -249,9 +259,7 @@ const App = () => {
           }
         />
 
-
-
-<Route
+        <Route
           path="/dashboard-messages"
           element={
             <SellerProtectedRoute>
