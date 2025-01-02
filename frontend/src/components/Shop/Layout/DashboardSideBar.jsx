@@ -117,7 +117,7 @@ const DashboardSideBar = ({ active }) => {
               active === 7 ? "text-[crimson]" : " text-[#555]"
             }`}
           >
-            Withdraw Event
+            Withdraw Money
           </h5>
         </Link>
       </div>

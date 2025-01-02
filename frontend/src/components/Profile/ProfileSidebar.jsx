@@ -1,16 +1,22 @@
 import React from "react";
 import { RxPerson } from "react-icons/rx";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { HiOutlineReceiptRefund, HiOutlineShoppingBag } from "react-icons/hi";
 import { AiOutlineLogout, AiOutlineMessage } from "react-icons/ai";
-import { MdOutlineTrackChanges } from "react-icons/md";
+import {
+  MdOutlineAdminPanelSettings,
+  MdOutlineTrackChanges,
+} from "react-icons/md";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { TbAddressBook } from "react-icons/tb";
 import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
 const ProfileSidebar = ({ setActive, active }) => {
+  const { loading, isAuthenticated, user } = useSelector((state) => state.user);
+
   const navigate = useNavigate();
 
   const logOutHandler = () => {
@@ -106,6 +112,7 @@ const ProfileSidebar = ({ setActive, active }) => {
           Change Password
         </span>
       </div>
+
       <div
         className="flex items-center cursor-pointer w-full mb-8"
         onClick={() => setActive(7)}
@@ -119,6 +126,28 @@ const ProfileSidebar = ({ setActive, active }) => {
           Address
         </span>
       </div>
+
+      {user && user?.role === "Admin" && (
+        <Link to="/admin/dashboard">
+          <div
+            className="flex items-center cursor-pointer w-full mb-8"
+            onClick={() => setActive(8)}
+          >
+            <MdOutlineAdminPanelSettings
+              size={20}
+              color={active === 7 ? "red" : ""}
+            />
+            <span
+              className={`pl-3 ${
+                active === 8 ? "text-[red]" : ""
+              } 800px:block hidden`}
+            >
+              Admin Dashboard
+            </span>
+          </div>
+        </Link>
+      )}
+
       <div
         className="flex items-center cursor-pointer w-full mb-8"
         onClick={() => setActive(8) || logOutHandler()}

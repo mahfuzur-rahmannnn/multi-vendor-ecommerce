@@ -30,7 +30,7 @@ const shopSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    default: "seller",
+    default: "Seller",
   },
   avatar: {
     type: String,
@@ -40,6 +40,32 @@ const shopSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  withdrawMethod: {
+    type: Object,
+  },
+  availableBalance: {
+    type: Number,
+    default: 0,
+  },
+  transections: [
+    {
+      amount: {
+        type: Number,
+        required: true,
+      },
+      status: {
+        type: String,
+        default: "Processing",
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now(),
+      },
+      updatedAt: {
+        type: Date,
+      },
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now(),
@@ -47,7 +73,6 @@ const shopSchema = new mongoose.Schema({
   resetPasswordToken: String,
   resetPasswordTime: Date,
 });
-
 // Hash password
 shopSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {

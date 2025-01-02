@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const ErrorHandler = require("../utils/ErrorHandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const { isAuthenticated, isSeller } = require("../middleware/auth");
+const { isAuthenticated, isSeller, isAdmin } = require("../middleware/auth");
 const Order = require("../model/order");
 const Product = require("../model/product");
+const Shop = require("../model/shop");
 
 // create  new order
 router.post(
@@ -90,16 +91,18 @@ router.get(
 );
 
 // update order status for seller
+// update order status for seller
 router.put(
   "/update-order-status/:id",
   isSeller,
   catchAsyncErrors(async (req, res, next) => {
     try {
       const order = await Order.findById(req.params.id);
+
       if (!order) {
         return next(new ErrorHandler("Order not found with this id", 400));
       }
-      if (req.body.status === "Delivered") {
+      if (req.body.status === "Transferred to delivery partner") {
         order.cart.forEach(async (o) => {
           await updateOrder(o._id, o.qty);
         });
@@ -109,7 +112,9 @@ router.put(
 
       if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
-        order.paymentInfo.status = "Succeded";
+        order.paymentInfo.status = "Succeeded";
+        const serviceCharge = order.totalPrice * 0.1;
+        await updateSellerInfo(order.totalPrice - serviceCharge);
       }
 
       await order.save({ validateBeforeSave: false });
@@ -124,7 +129,16 @@ router.put(
 
         product.stock -= qty;
         product.sold_out += qty;
+
         await product.save({ validateBeforeSave: false });
+      }
+
+      async function updateSellerInfo(amount) {
+        const seller = await Shop.findById(req.seller.id);
+
+        seller.availableBalance = amount;
+
+        await seller.save();
       }
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
@@ -193,6 +207,27 @@ router.put(
 
         await product.save({ validateBeforeSave: false });
       }
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// all orders --- for admin
+router.get(
+  "/admin-all-orders",
+  isAuthenticated,
+  isAdmin("Admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const orders = await Order.find().sort({
+        deliveredAt: -1,
+        createdAt: -1,
+      });
+      res.status(201).json({
+        success: true,
+        orders,
+      });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
